@@ -2,16 +2,13 @@ package com.qikserve.checkout_api.model;
 
 import java.util.List;
 
-public class CheckoutSummary {
+public class CheckoutResponse {
     private List<CheckoutItem> items;
     private int subtotal;
     private int totalSavings;
     private int totalPrice;
 
-    public CheckoutSummary() {
-    }
-
-    public CheckoutSummary(List<CheckoutItem> items, int subtotal, int totalSavings, int totalPrice) {
+    public CheckoutResponse(List<CheckoutItem> items, int subtotal, int totalSavings, int totalPrice) {
         this.items = items;
         this.subtotal = subtotal;
         this.totalSavings = totalSavings;

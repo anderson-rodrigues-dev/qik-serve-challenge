@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(name = "ProductClient", url = "http://localhost:8081")
+@FeignClient(name = "ProductClient", url = "${wiremock.base-url:http://localhost:8081}")
 public interface ProductProxy {
     @GetMapping("/products")
     List<Product> getAllProducts();

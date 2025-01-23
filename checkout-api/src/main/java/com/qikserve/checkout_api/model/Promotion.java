@@ -1,16 +1,23 @@
 package com.qikserve.checkout_api.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Promotion {
     private String id;
-    private String type;
+    private PromotionType type;
+
+    @JsonProperty("required_qty")
     private int requiredQty;
+
     private int price;
+
+    @JsonProperty("discount_percent")
     private int discountPercent;
 
     public Promotion() {
     }
 
-    public Promotion(String id, String type, int requiredQty, int price, int discountPercent) {
+    public Promotion(String id, PromotionType type, int requiredQty, int price, int discountPercent) {
         this.id = id;
         this.type = type;
         this.requiredQty = requiredQty;
@@ -26,11 +33,11 @@ public class Promotion {
         this.id = id;
     }
 
-    public String getType() {
+    public PromotionType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(PromotionType type) {
         this.type = type;
     }
 
