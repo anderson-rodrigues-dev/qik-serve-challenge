@@ -31,7 +31,7 @@ public class CheckoutService {
             } catch (FeignException.NotFound e) {
                 throw e;
             } catch (RuntimeException e) {
-                throw new RuntimeException("Error processing item with ID: " + (item.getId().isEmpty() ? "null" : item.getId()) + " - " + e.getMessage(), e);
+                throw new RuntimeException("Error processing item with ID: " + (item.getId().isEmpty() ? "null" : item.getId()), e);
             }
         }
 
@@ -47,7 +47,7 @@ public class CheckoutService {
         int discount = 0;
         int calculatedPrice = grossPrice;
 
-        if (product.getPromotions() != null) {
+        if (product.getPromotions() != null && !product.getPromotions().isEmpty()) {
             calculatedPrice = applyPromotions(item, product, result);
             discount = grossPrice - calculatedPrice;
         } else {
