@@ -3,3 +3,5 @@ server:
 spring:
   application:
     name: checkout-api
+wiremock:
+  base-url: http://localhost:8081
