@@ -5,7 +5,6 @@ COPY ${JAR_FILE} /app.jar
 RUN bash -c 'touch /app.jar'
 
 COPY mappings /mappings
-COPY __files /home/wiremock/__files
 
 EXPOSE 8081
 

@@ -8,7 +8,6 @@ services:
     ports:
       - "8081:8081"
     environment:
-      WIREMOCK.SERVER.FILES: /__files
       WIREMOCK.SERVER.STUBS: /mappings
     networks:
       - checkout-network
