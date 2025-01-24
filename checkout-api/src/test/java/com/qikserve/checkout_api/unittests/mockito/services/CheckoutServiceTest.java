@@ -61,8 +61,6 @@ public class CheckoutServiceTest {
         Product product = MockProduct.mockProductWithPromotion();
         when(productProxy.getProductById(product.getId())).thenReturn(product);
 
-//        doReturn(1799).when(any(QtyBasedPriceOverrideStrategy.class)).applyPromotion(any(Product.class), any(Promotion.class), eq(2), any(CheckoutResult.class));
-
         List<CheckoutItem> items = List.of(MockCheckoutItem.mockCheckoutItemWithDiscount());
 
         var result = checkoutService.calculateTotal(items);
@@ -101,7 +99,7 @@ public class CheckoutServiceTest {
         List<CheckoutItem> items = List.of(MockCheckoutItem.mockCheckoutItemWithInvalidProduct());
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> checkoutService.calculateTotal(items));
-        assertEquals("Error processing item with ID: " + "InvalidID", exception.getMessage());
+        assertEquals("Product not found", exception.getMessage());
         verifyNoInteractions(promotionStrategy);
     }
 }
