@@ -8,6 +8,9 @@ public class CheckoutResponse {
     private int totalSavings;
     private int totalPrice;
 
+    public CheckoutResponse() {
+    }
+
     public CheckoutResponse(List<CheckoutItem> items, int subtotal, int totalSavings, int totalPrice) {
         this.items = items;
         this.subtotal = subtotal;

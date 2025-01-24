@@ -1,7 +1,7 @@
 package com.qikserve.checkout_api.model;
 
 public class CheckoutItem {
-    private String id;
+    private String productId;
     private String name;
     private int unitPrice;
     private int quantity;
@@ -12,8 +12,8 @@ public class CheckoutItem {
     public CheckoutItem() {
     }
 
-    public CheckoutItem(String id, String name, int unitPrice, int quantity, int grossPrice, int discount, int calculatedPrice) {
-        this.id = id;
+    public CheckoutItem(String productId, String name, int unitPrice, int quantity, int grossPrice, int discount, int calculatedPrice) {
+        this.productId = productId;
         this.name = name;
         this.unitPrice = unitPrice;
         this.quantity = quantity;
@@ -22,12 +22,17 @@ public class CheckoutItem {
         this.calculatedPrice = calculatedPrice;
     }
 
-    public String getId() {
-        return id;
+    public CheckoutItem(String productId, int quantity) {
+        this.productId = productId;
+        this.quantity = quantity;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public String getName() {

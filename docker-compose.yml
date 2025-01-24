@@ -1,23 +1,19 @@
 services:
   wiremock:
-    image: andersonrodriguesdev/wiremock
+    image: andersonrodriguesdev/wiremock:latest
     container_name: wiremock
     build:
       context: ./wiremock
       dockerfile: Dockerfile
     ports:
       - "8081:8081"
-    volumes:
-      - ./wiremock:/home/wiremock:rw
-      - ./wiremock/mappings:/mappings:rw
-    entrypoint: ["java", "-jar", "/app.jar", "--port", "8081", "--bind-address", "0.0.0.0"]
     environment:
-      WIREMOCK.SERVER.FILES: /home/wiremock/__files
-      WIREMOCK.SERVER.STUBS: /home/wiremock/mappings
+      WIREMOCK.SERVER.FILES: /__files
+      WIREMOCK.SERVER.STUBS: /mappings
     networks:
       - checkout-network
   checkout-api:
-    image: andersonrodriguesdev/checkout-api
+    image: andersonrodriguesdev/checkout-api:latest
     build:
       context: ./checkout-api
       dockerfile: Dockerfile

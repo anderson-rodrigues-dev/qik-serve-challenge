@@ -3,10 +3,8 @@ package com.qikserve.checkout_api.service;
 import com.qikserve.checkout_api.model.*;
 import com.qikserve.checkout_api.proxy.ProductProxy;
 import com.qikserve.checkout_api.strategy.PromotionStrategy;
-import feign.FeignException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -22,25 +20,30 @@ public class CheckoutService {
     }
 
     public CheckoutResponse calculateTotal(List<CheckoutItem> items) {
-        CheckoutResult result = new CheckoutResult();
-        List<CheckoutItem> calculatedItems = new ArrayList<>();
-
-        for (CheckoutItem item : items) {
-            try{
-                calculatedItems.add(processItem(item, result));
-            } catch (FeignException.NotFound e) {
-                throw e;
-            } catch (RuntimeException e) {
-                throw new RuntimeException("Error processing item with ID: " + (item.getId().isEmpty() ? "null" : item.getId()), e);
-            }
+        if (items == null || items.isEmpty()) {
+            throw new IllegalArgumentException("The checkout items list cannot be null or empty.");
         }
+
+        CheckoutResult result = new CheckoutResult();
+
+        List<CheckoutItem> validItems = items.stream()
+                .filter(item -> item.getQuantity() > 0)
+                .toList();
+
+        if (validItems.isEmpty()) {
+            throw new IllegalArgumentException("All items have zero or negative quantities.");
+        }
+
+        List<CheckoutItem> calculatedItems = validItems.stream()
+                .map(item -> processItem(item, result))
+                .toList();
 
         int subtotal = result.getTotal() + result.getSavings();
         return new CheckoutResponse(calculatedItems, subtotal, result.getSavings(), result.getTotal());
     }
 
     private CheckoutItem processItem(CheckoutItem item, CheckoutResult result) {
-        Product product = fetchProduct(item.getId());
+        Product product = fetchProduct(item.getProductId());
         logger.info("Processing product with ID: " + product.getId());
 
         int grossPrice = calculateGrossPrice(item.getQuantity(), product.getPrice());
@@ -66,11 +69,7 @@ public class CheckoutService {
     }
 
     private Product fetchProduct(String productId) {
-        try{
-            return productClient.getProductById(productId);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to fetch product with ID: " + productId, e);
-        }
+        return productClient.getProductById(productId);
     }
 
     private int calculateGrossPrice(int quantity, int unitPrice) {
@@ -88,7 +87,7 @@ public class CheckoutService {
                         .map(strategy -> strategy.applyPromotion(product, promotion, item.getQuantity(), result))
                         .orElse(calculatedPrice);
             } catch (Exception e) {
-                throw new RuntimeException("Error applying promotion for item ID: " + item.getId() + " - " + e.getMessage(), e);
+                throw new RuntimeException("Error applying promotion for item ID: " + item.getProductId() + " - " + e.getMessage(), e);
             }
         }
 
