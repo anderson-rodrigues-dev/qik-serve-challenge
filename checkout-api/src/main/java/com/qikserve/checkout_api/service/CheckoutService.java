@@ -3,6 +3,7 @@ package com.qikserve.checkout_api.service;
 import com.qikserve.checkout_api.model.*;
 import com.qikserve.checkout_api.proxy.ProductProxy;
 import com.qikserve.checkout_api.strategy.PromotionStrategy;
+import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -15,17 +16,21 @@ public class CheckoutService {
     private final ProductService productService;
     private final ProductProxy productClient;
     private final List<PromotionStrategy> promotionStrategies;
+    private final MessageSource messageSource;
     private final Logger logger = Logger.getLogger(CheckoutService.class.getName());
 
-    public CheckoutService(ProductService productService, ProductProxy productClient, List<PromotionStrategy> promotionStrategies) {
+    public CheckoutService(ProductService productService, ProductProxy productClient, List<PromotionStrategy> promotionStrategies, MessageSource messageSource) {
         this.productService = productService;
         this.productClient = productClient;
         this.promotionStrategies = promotionStrategies;
+        this.messageSource = messageSource;
     }
 
     public CheckoutResponse calculateTotal(List<CheckoutItem> items) {
         if (items == null || items.isEmpty()) {
-            throw new IllegalArgumentException("The checkout items list cannot be null or empty.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    "error.checkout.items.null_or_empty", null, LocaleContextHolder.getLocale()
+            ));
         }
 
         CheckoutResult result = new CheckoutResult();
@@ -35,7 +40,9 @@ public class CheckoutService {
                 .toList();
 
         if (validItems.isEmpty()) {
-            throw new IllegalArgumentException("All items have zero or negative quantities.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    "error.checkout.items.invalid_quantity", null, LocaleContextHolder.getLocale()
+            ));
         }
 
         List<CheckoutItem> calculatedItems = validItems.stream()
@@ -49,10 +56,6 @@ public class CheckoutService {
     private CheckoutItem processItem(CheckoutItem item, CheckoutResult result) {
         Product product = fetchProduct(item.getProductId());
 
-        Locale locale = LocaleContextHolder.getLocale();
-        String localizedName = productService.getLocalizedName(product.getId(), locale);
-
-        product.setName(localizedName);
         logger.info("Processing product with ID: " + product.getId());
 
         int grossPrice = calculateGrossPrice(item.getQuantity(), product.getPrice());
@@ -78,7 +81,14 @@ public class CheckoutService {
     }
 
     private Product fetchProduct(String productId) {
-        return productClient.getProductById(productId);
+        Product product = productClient.getProductById(productId);
+
+        Locale locale = LocaleContextHolder.getLocale();
+        String localizedName = productService.getLocalizedName(product.getId(), locale);
+
+        product.setName(localizedName);
+
+        return product;
     }
 
     private int calculateGrossPrice(int quantity, int unitPrice) {
@@ -96,7 +106,13 @@ public class CheckoutService {
                         .map(strategy -> strategy.applyPromotion(product, promotion, item.getQuantity(), result))
                         .orElse(calculatedPrice);
             } catch (Exception e) {
-                throw new RuntimeException("Error applying promotion for item ID: " + item.getProductId() + " - " + e.getMessage(), e);
+                throw new RuntimeException(
+                        messageSource.getMessage(
+                            "error.promotion.application",
+                            new Object[]{item.getProductId(), e.getMessage()},
+                            LocaleContextHolder.getLocale()
+                        ), e
+                );
             }
         }
 

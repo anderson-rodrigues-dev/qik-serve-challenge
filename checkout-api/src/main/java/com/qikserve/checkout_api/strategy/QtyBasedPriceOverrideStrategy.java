@@ -4,13 +4,21 @@ import com.qikserve.checkout_api.model.Product;
 import com.qikserve.checkout_api.model.Promotion;
 import com.qikserve.checkout_api.model.PromotionType;
 import com.qikserve.checkout_api.service.CheckoutResult;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.logging.Logger;
 
 @Component
 public class QtyBasedPriceOverrideStrategy implements PromotionStrategy {
+    private final MessageSource messageSource;
+
     private final Logger logger = Logger.getLogger(QtyBasedPriceOverrideStrategy.class.getName());
+
+    public QtyBasedPriceOverrideStrategy(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @Override
     public boolean supports(Promotion promotion) {
@@ -20,7 +28,13 @@ public class QtyBasedPriceOverrideStrategy implements PromotionStrategy {
     @Override
     public int applyPromotion(Product product, Promotion promotion, int quantity, CheckoutResult result) {
         if(promotion.getRequiredQty() <= 0) {
-            throw new IllegalArgumentException("Invalid requiredQty in promotion: " + promotion.getId());
+            String errorMessage = messageSource.getMessage(
+                    "error.promotion.invalid_required_qty",
+                    new Object[]{promotion.getId()},
+                    LocaleContextHolder.getLocale()
+            );
+
+            throw new IllegalArgumentException(errorMessage);
         }
 
         logger.info("Applying QTY_BASED_PRICE_OVERRIDE for product: " + product.getName());

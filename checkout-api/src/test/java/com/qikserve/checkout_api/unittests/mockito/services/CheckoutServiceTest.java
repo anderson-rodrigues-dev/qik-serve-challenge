@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.springframework.context.MessageSource;
 
 import java.util.List;
 
@@ -33,6 +34,9 @@ public class CheckoutServiceTest {
     private PromotionStrategy promotionStrategy;
 
     @Mock
+    private MessageSource messageSource;
+
+    @Mock
     private ProductService productService;
 
     @InjectMocks
@@ -42,13 +46,13 @@ public class CheckoutServiceTest {
     private CheckoutResult checkoutResult;
 
     @Spy
-    private BuyXGetYFreeStrategy buyXGetYFreeStrategy;
+    private BuyXGetYFreeStrategy buyXGetYFreeStrategy = new BuyXGetYFreeStrategy(messageSource);
 
     @Spy
-    private FlatPercentStrategy flatPercentStrategy;
+    private FlatPercentStrategy flatPercentStrategy = new FlatPercentStrategy(messageSource);
 
     @Spy
-    private QtyBasedPriceOverrideStrategy qtyBasedPriceOverrideStrategy;
+    private QtyBasedPriceOverrideStrategy qtyBasedPriceOverrideStrategy = new QtyBasedPriceOverrideStrategy(messageSource);
 
     @Mock
     private List<PromotionStrategy> promotionStrategies;
@@ -57,7 +61,7 @@ public class CheckoutServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         promotionStrategies = List.of(buyXGetYFreeStrategy, flatPercentStrategy, qtyBasedPriceOverrideStrategy);
-        checkoutService = new CheckoutService(productService, productProxy, promotionStrategies);
+        checkoutService = new CheckoutService(productService, productProxy, promotionStrategies, messageSource);
     }
 
     @Test
