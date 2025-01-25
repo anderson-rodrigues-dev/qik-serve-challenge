@@ -6,6 +6,7 @@ import com.qikserve.checkout_api.model.Promotion;
 import com.qikserve.checkout_api.proxy.ProductProxy;
 import com.qikserve.checkout_api.service.CheckoutResult;
 import com.qikserve.checkout_api.service.CheckoutService;
+import com.qikserve.checkout_api.service.ProductService;
 import com.qikserve.checkout_api.strategy.BuyXGetYFreeStrategy;
 import com.qikserve.checkout_api.strategy.FlatPercentStrategy;
 import com.qikserve.checkout_api.strategy.PromotionStrategy;
@@ -31,6 +32,9 @@ public class CheckoutServiceTest {
     @Mock
     private PromotionStrategy promotionStrategy;
 
+    @Mock
+    private ProductService productService;
+
     @InjectMocks
     private CheckoutService checkoutService;
 
@@ -53,7 +57,7 @@ public class CheckoutServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         promotionStrategies = List.of(buyXGetYFreeStrategy, flatPercentStrategy, qtyBasedPriceOverrideStrategy);
-        checkoutService = new CheckoutService(productProxy, promotionStrategies);
+        checkoutService = new CheckoutService(productService, productProxy, promotionStrategies);
     }
 
     @Test

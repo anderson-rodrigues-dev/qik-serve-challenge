@@ -15,6 +15,7 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +46,8 @@ public class CheckoutControllerXmlTest extends AbstractIntegrationTest {
 
         String response = given()
                 .spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_XML)
-                .accept(TestConfigs.CONTENT_TYPE_XML)
+                .contentType(MediaType.APPLICATION_XML_VALUE)
+                .accept(MediaType.APPLICATION_XML_VALUE)
                 .body(xmlMapper.writeValueAsBytes(items))
                 .when()
                 .post()
@@ -74,8 +75,8 @@ public class CheckoutControllerXmlTest extends AbstractIntegrationTest {
 
         String response = given()
                 .spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_XML)
-                .accept(TestConfigs.CONTENT_TYPE_XML)
+                .contentType(MediaType.APPLICATION_XML_VALUE)
+                .accept(MediaType.APPLICATION_XML_VALUE)
                 .body(xmlMapper.writeValueAsBytes(items))
                 .when()
                 .post()
@@ -102,8 +103,8 @@ public class CheckoutControllerXmlTest extends AbstractIntegrationTest {
 
         given()
                 .spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_XML)
-                .accept(TestConfigs.CONTENT_TYPE_XML)
+                .contentType(MediaType.APPLICATION_XML_VALUE)
+                .accept(MediaType.APPLICATION_XML_VALUE)
                 .body(xmlMapper.writeValueAsBytes(items))
                 .when()
                 .post()
@@ -121,8 +122,8 @@ public class CheckoutControllerXmlTest extends AbstractIntegrationTest {
 
         given()
                 .spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_XML)
-                .accept(TestConfigs.CONTENT_TYPE_XML)
+                .contentType(MediaType.APPLICATION_XML_VALUE)
+                .accept(MediaType.APPLICATION_XML_VALUE)
                 .body(xmlMapper.writeValueAsBytes(items))
                 .when()
                 .post()

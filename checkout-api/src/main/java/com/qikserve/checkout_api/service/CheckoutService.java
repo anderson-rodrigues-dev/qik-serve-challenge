@@ -3,18 +3,22 @@ package com.qikserve.checkout_api.service;
 import com.qikserve.checkout_api.model.*;
 import com.qikserve.checkout_api.proxy.ProductProxy;
 import com.qikserve.checkout_api.strategy.PromotionStrategy;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 @Service
 public class CheckoutService {
+    private final ProductService productService;
     private final ProductProxy productClient;
     private final List<PromotionStrategy> promotionStrategies;
     private final Logger logger = Logger.getLogger(CheckoutService.class.getName());
 
-    public CheckoutService(ProductProxy productClient, List<PromotionStrategy> promotionStrategies) {
+    public CheckoutService(ProductService productService, ProductProxy productClient, List<PromotionStrategy> promotionStrategies) {
+        this.productService = productService;
         this.productClient = productClient;
         this.promotionStrategies = promotionStrategies;
     }
@@ -44,6 +48,11 @@ public class CheckoutService {
 
     private CheckoutItem processItem(CheckoutItem item, CheckoutResult result) {
         Product product = fetchProduct(item.getProductId());
+
+        Locale locale = LocaleContextHolder.getLocale();
+        String localizedName = productService.getLocalizedName(product.getId(), locale);
+
+        product.setName(localizedName);
         logger.info("Processing product with ID: " + product.getId());
 
         int grossPrice = calculateGrossPrice(item.getQuantity(), product.getPrice());

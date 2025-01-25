@@ -4,6 +4,7 @@ import com.qikserve.checkout_api.exception.ExceptionResponse;
 import feign.FeignException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -34,19 +35,34 @@ public class GlobalExceptionHandler {
 
         HttpStatus status;
 
+        String message = ex.getMessage();
+
         try {
             status = HttpStatus.valueOf(normalizedStatusName);
         } catch (IllegalArgumentException e) {
+            message = "WireMock Server Unavailable";
             status = HttpStatus.BAD_GATEWAY;
         }
 
         ExceptionResponse response = new ExceptionResponse(
                 new Date(),
-                ex.getMessage(),
+                message,
                 request.getDescription(false)
         );
 
         return ResponseEntity.status(status).body(response);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ExceptionResponse> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException ex, WebRequest request
+    ) {
+        ExceptionResponse response = new ExceptionResponse(
+                new Date(),
+                "The submitted data structure is invalid. Please check that the JSON is formatted correctly and that the data types are compatible.",
+                request.getDescription(false)
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(RuntimeException.class)

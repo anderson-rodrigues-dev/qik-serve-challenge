@@ -5,7 +5,6 @@ import com.qikserve.checkout_api.model.CheckoutItem;
 import com.qikserve.checkout_api.model.CheckoutItemList;
 import com.qikserve.checkout_api.model.CheckoutResponse;
 import com.qikserve.checkout_api.service.CheckoutService;
-import com.qikserve.checkout_api.util.MediaType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,11 +35,11 @@ public class CheckoutController {
                     description = "Checkout calculated successfully",
                     content = {
                             @Content(
-                                    mediaType = MediaType.APPLICATION_JSON,
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = CheckoutResponse.class)
                             ),
                             @Content(
-                                    mediaType = MediaType.APPLICATION_XML,
+                                    mediaType = MediaType.APPLICATION_XML_VALUE,
                                     schema = @Schema(implementation = CheckoutResponse.class)
                             )
                     }
@@ -49,11 +49,11 @@ public class CheckoutController {
                     description = "Invalid request data",
                     content = {
                             @Content(
-                                    mediaType = MediaType.APPLICATION_JSON,
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ExceptionResponse.class)
                             ),
                             @Content(
-                                    mediaType = MediaType.APPLICATION_XML,
+                                    mediaType = MediaType.APPLICATION_XML_VALUE,
                                     schema = @Schema(implementation = ExceptionResponse.class)
                             )
                     }
@@ -63,11 +63,11 @@ public class CheckoutController {
                     description = "Product not found",
                     content = {
                             @Content(
-                                    mediaType = MediaType.APPLICATION_JSON,
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ExceptionResponse.class)
                             ),
                             @Content(
-                                    mediaType = MediaType.APPLICATION_XML,
+                                    mediaType = MediaType.APPLICATION_XML_VALUE,
                                     schema = @Schema(implementation = ExceptionResponse.class)
                             )
                     }
@@ -77,11 +77,11 @@ public class CheckoutController {
                     description = "Internal server error",
                     content = {
                             @Content(
-                                    mediaType = MediaType.APPLICATION_JSON,
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ExceptionResponse.class)
                             ),
                             @Content(
-                                    mediaType = MediaType.APPLICATION_XML,
+                                    mediaType = MediaType.APPLICATION_XML_VALUE,
                                     schema = @Schema(implementation = ExceptionResponse.class)
                             )
                     }
@@ -91,19 +91,19 @@ public class CheckoutController {
                     description = "Wiremock Unavailable",
                     content = {
                             @Content(
-                                    mediaType = MediaType.APPLICATION_JSON,
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ExceptionResponse.class)
                             ),
                             @Content(
-                                    mediaType = MediaType.APPLICATION_XML,
+                                    mediaType = MediaType.APPLICATION_XML_VALUE,
                                     schema = @Schema(implementation = ExceptionResponse.class)
                             )
                     }
             )
     })
     @PostMapping(
-            produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML},
-            consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML}
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     public CheckoutResponse calculateCheckout(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -111,11 +111,11 @@ public class CheckoutController {
                     required = true,
                     content = {
                             @Content(
-                                    mediaType = MediaType.APPLICATION_JSON,
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = CheckoutItem[].class)
                             ),
                             @Content(
-                                    mediaType = MediaType.APPLICATION_XML,
+                                    mediaType = MediaType.APPLICATION_XML_VALUE,
                                     schema = @Schema(implementation = CheckoutItemList.class)
                             )
                     }

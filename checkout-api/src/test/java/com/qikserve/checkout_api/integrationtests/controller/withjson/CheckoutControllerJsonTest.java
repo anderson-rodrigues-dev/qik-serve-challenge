@@ -15,6 +15,7 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ public class CheckoutControllerJsonTest extends AbstractIntegrationTest {
 
         String response = given()
                 .spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(items)
                 .when()
                 .post()
@@ -73,7 +74,7 @@ public class CheckoutControllerJsonTest extends AbstractIntegrationTest {
 
         String response = given()
                 .spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(items)
                 .when()
                 .post()
@@ -100,7 +101,7 @@ public class CheckoutControllerJsonTest extends AbstractIntegrationTest {
 
         given()
                 .spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(items)
                 .when()
                 .post()
@@ -118,7 +119,7 @@ public class CheckoutControllerJsonTest extends AbstractIntegrationTest {
 
         given()
                 .spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(items)
                 .when()
                 .post()
