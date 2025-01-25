@@ -1,11 +1,22 @@
 package com.qikserve.checkout_api.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.List;
 
-public class Product{
+@Schema(description = "Represents a product available for purchase.")
+public class Product {
+
+    @Schema(description = "Unique identifier for the product.", example = "C8GDyLrHJb")
     private String id;
+
+    @Schema(description = "Name of the product.", example = "Amazing Salad!")
     private String name;
+
+    @Schema(description = "Price of the product in cents.", example = "499")
     private int price;
+
+    @Schema(description = "List of promotions applicable to the product.")
     private List<Promotion> promotions;
 
     public Product() {

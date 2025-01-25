@@ -3,5 +3,8 @@ server:
 spring:
   application:
     name: checkout-api
+springdoc:
+  swagger-ui:
+    path: /
 wiremock:
   base-url: http://localhost:8081
