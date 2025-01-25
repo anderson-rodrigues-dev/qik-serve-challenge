@@ -1,8 +1,8 @@
-package com.qikserve.checkout_api.integrationtests.controller;
+package com.qikserve.checkout_api.integrationtests.controller.withxml;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.qikserve.checkout_api.configs.TestConfigs;
 import com.qikserve.checkout_api.integrationtests.testcontainers.AbstractIntegrationTest;
@@ -24,15 +24,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class CheckoutControllerTest extends AbstractIntegrationTest {
-    private static ObjectMapper objectMapper;
+public class CheckoutControllerXmlTest extends AbstractIntegrationTest {
+    private static XmlMapper xmlMapper;
     private static List<CheckoutItem> items;
 
     @BeforeAll
     public static void setUp() {
-        objectMapper = new ObjectMapper();
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        objectMapper.registerModule(new JavaTimeModule());
+        xmlMapper = new XmlMapper();
+        xmlMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        xmlMapper.registerModule(new JavaTimeModule());
         items = new ArrayList<>();
     }
 
@@ -45,8 +45,9 @@ public class CheckoutControllerTest extends AbstractIntegrationTest {
 
         String response = given()
                 .spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_JSON)
-                .body(items)
+                .contentType(TestConfigs.CONTENT_TYPE_XML)
+                .accept(TestConfigs.CONTENT_TYPE_XML)
+                .body(xmlMapper.writeValueAsBytes(items))
                 .when()
                 .post()
                 .then()
@@ -55,7 +56,7 @@ public class CheckoutControllerTest extends AbstractIntegrationTest {
                 .body()
                 .asString();
 
-        CheckoutResponse checkoutResponse = objectMapper.readValue(response, CheckoutResponse.class);
+        CheckoutResponse checkoutResponse = xmlMapper.readValue(response, CheckoutResponse.class);
 
         assertNotNull(checkoutResponse);
         assertNotNull(checkoutResponse.getItems());
@@ -73,8 +74,9 @@ public class CheckoutControllerTest extends AbstractIntegrationTest {
 
         String response = given()
                 .spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_JSON)
-                .body(items)
+                .contentType(TestConfigs.CONTENT_TYPE_XML)
+                .accept(TestConfigs.CONTENT_TYPE_XML)
+                .body(xmlMapper.writeValueAsBytes(items))
                 .when()
                 .post()
                 .then()
@@ -83,7 +85,7 @@ public class CheckoutControllerTest extends AbstractIntegrationTest {
                 .body()
                 .asString();
 
-        CheckoutResponse checkoutResponse = objectMapper.readValue(response, CheckoutResponse.class);
+        CheckoutResponse checkoutResponse = xmlMapper.readValue(response, CheckoutResponse.class);
 
         assertNotNull(checkoutResponse);
         assertNotNull(checkoutResponse.getItems());
@@ -93,15 +95,16 @@ public class CheckoutControllerTest extends AbstractIntegrationTest {
 
     @Test
     @Order(3)
-    void testCheckoutWithInvalidProductId() {
+    void testCheckoutWithInvalidProductId() throws JsonProcessingException {
         mockListCheckoutItems(3, true);
 
         RequestSpecification specification = createRequestSpecification();
 
         given()
                 .spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_JSON)
-                .body(items)
+                .contentType(TestConfigs.CONTENT_TYPE_XML)
+                .accept(TestConfigs.CONTENT_TYPE_XML)
+                .body(xmlMapper.writeValueAsBytes(items))
                 .when()
                 .post()
                 .then()
@@ -110,7 +113,7 @@ public class CheckoutControllerTest extends AbstractIntegrationTest {
 
     @Test
     @Order(4)
-    void testCheckoutWithZeroQuantity() {
+    void testCheckoutWithZeroQuantity() throws JsonProcessingException {
         items.clear();
         items.add(new CheckoutItem("PWWe3w1SDU", 0));
 
@@ -118,8 +121,9 @@ public class CheckoutControllerTest extends AbstractIntegrationTest {
 
         given()
                 .spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_JSON)
-                .body(items)
+                .contentType(TestConfigs.CONTENT_TYPE_XML)
+                .accept(TestConfigs.CONTENT_TYPE_XML)
+                .body(xmlMapper.writeValueAsBytes(items))
                 .when()
                 .post()
                 .then()
