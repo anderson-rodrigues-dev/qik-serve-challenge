@@ -1,3 +1,37 @@
+#logging:
+#  level:
+#    com.qikserve: debug
+#    root: info
+#  pattern:
+#    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  metrics:
+    enable:
+      jvm: true
+    tags:
+      application: checkout-api
+    distribution:
+      slo:
+        http: '5ms, 10ms, 25ms, 50ms, 100ms, 200ms, 300ms, 400ms, 500ms, 1s, 2s'
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
 server:
   port: 8080
 spring:

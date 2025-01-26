@@ -17,6 +17,7 @@ public class CheckoutService {
     private final ProductProxy productClient;
     private final List<PromotionStrategy> promotionStrategies;
     private final MessageSource messageSource;
+
     private final Logger logger = Logger.getLogger(CheckoutService.class.getName());
 
     public CheckoutService(ProductService productService, ProductProxy productClient, List<PromotionStrategy> promotionStrategies, MessageSource messageSource) {
