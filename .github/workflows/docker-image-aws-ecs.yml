@@ -41,6 +41,9 @@ jobs:
     - name: Build Checkout API Jar
       working-directory: ./checkout-api
       run: mvn clean package
+
+    - name: Pull Jaeger image
+      run: docker pull jaegertracing/all-in-one:1.47
       
     - name: Docker Compose Build
       working-directory: .
