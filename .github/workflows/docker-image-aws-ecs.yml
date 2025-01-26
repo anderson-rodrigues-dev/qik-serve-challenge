@@ -66,12 +66,6 @@ jobs:
         docker push ${{ secrets.CHECKOUT_API_IMAGE_REPO_URL }}:${{ github.run_id }}
         docker push ${{ secrets.CHECKOUT_API_IMAGE_REPO_URL }}:latest
 
-        docker push ${{ secrets.COLLECTOR_IMAGE_REPO_URL }}:${{ github.run_id }}
-        docker push ${{ secrets.COLLECTOR_IMAGE_REPO_URL }}:latest
-
-        docker push ${{ secrets.JAEGER_IMAGE_REPO_URL }}:${{ github.run_id }}
-        docker push ${{ secrets.JAEGER_IMAGE_REPO_URL }}:latest
-
     - name: Download task definition
       run: |
         aws ecs describe-task-definition --task-definition ${{ secrets.TASK_DEFINITION_NAME }} --query taskDefinition > task-definition.json
