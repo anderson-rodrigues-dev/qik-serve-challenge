@@ -42,6 +42,10 @@ jobs:
       working-directory: ./checkout-api
       run: mvn clean package
 
+    - name: Push Zipkin Docker Image
+      working-directory: .
+      run: docker pull openzipkin/zipkin:latest
+
     - name: Docker Compose Build
       working-directory: .
       run: docker compose build
