@@ -42,9 +42,6 @@ jobs:
       working-directory: ./checkout-api
       run: mvn clean package
 
-    - name: Pull Jaeger image
-      run: docker pull jaegertracing/all-in-one:1.47
-      
     - name: Docker Compose Build
       working-directory: .
       run: docker compose build
@@ -57,11 +54,8 @@ jobs:
         docker tag ${{ secrets.DOCKER_USERNAME }}/checkout-api:latest ${{ secrets.CHECKOUT_API_IMAGE_REPO_URL }}:${{ github.run_id }}
         docker tag ${{ secrets.DOCKER_USERNAME }}/checkout-api:latest ${{ secrets.CHECKOUT_API_IMAGE_REPO_URL }}:latest
 
-        docker tag otel/opentelemetry-collector:latest ${{ secrets.COLLECTOR_IMAGE_REPO_URL }}:${{ github.run_id }}
-        docker tag otel/opentelemetry-collector:latest ${{ secrets.COLLECTOR_IMAGE_REPO_URL }}:latest
-
-        docker tag jaegertracing/all-in-one:1.47 ${{ secrets.JAEGER_IMAGE_REPO_URL }}:${{ github.run_id }}
-        docker tag jaegertracing/all-in-one:1.47 ${{ secrets.JAEGER_IMAGE_REPO_URL }}:latest
+        docker tag openzipkin/zipkin:latest ${{ secrets.ZIPKIN_IMAGE_REPO_URL }}:${{ github.run_id }}
+        docker tag openzipkin/zipkin:latest ${{ secrets.ZIPKIN_IMAGE_REPO_URL }}:latest
         
         docker push ${{ secrets.WIREMOCK_IMAGE_REPO_URL }}:${{ github.run_id }}
         docker push ${{ secrets.WIREMOCK_IMAGE_REPO_URL }}:latest
@@ -69,11 +63,8 @@ jobs:
         docker push ${{ secrets.CHECKOUT_API_IMAGE_REPO_URL }}:${{ github.run_id }}
         docker push ${{ secrets.CHECKOUT_API_IMAGE_REPO_URL }}:latest
 
-        docker push ${{ secrets.COLLECTOR_IMAGE_REPO_URL }}:${{ github.run_id }}
-        docker push ${{ secrets.COLLECTOR_IMAGE_REPO_URL }}:latest
-
-        docker push ${{ secrets.JAEGER_IMAGE_REPO_URL }}:${{ github.run_id }}
-        docker push ${{ secrets.JAEGER_IMAGE_REPO_URL }}:latest
+        docker push ${{ secrets.ZIPKIN_IMAGE_REPO_URL }}:${{ github.run_id }}
+        docker push ${{ secrets.ZIPKIN_IMAGE_REPO_URL }}:latest
 
     - name: Download task definition
       run: |
