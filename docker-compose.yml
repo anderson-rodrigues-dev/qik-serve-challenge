@@ -1,24 +1,10 @@
 name: qikserve-container
 services:
-  collector:
-    image: otel/opentelemetry-collector:latest
-    container_name: collector
-    build:
-      context: ./checkout-api/collector
-      dockerfile: Dockerfile
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: zipkin
     ports:
-      - "4317:4317"
-      - "4318:4318"
-    networks:
-      - monit-network
-      - checkout-network
-  jaeger:
-    image: jaegertracing/all-in-one:1.47
-    container_name: jaeger
-    ports:
-      - "16686:16686"
-    depends_on:
-      - collector
+      - "9411:9411"
     networks:
       - monit-network
   wiremock:
@@ -31,6 +17,7 @@ services:
       - "8081:8081"
     environment:
       WIREMOCK.SERVER.STUBS: /mappings
+      OTEL_EXPORTER_JAEGER_ENDPOINT: http://jaeger:14268
     networks:
       - checkout-network
 
@@ -47,73 +34,12 @@ services:
 
     depends_on:
       - wiremock
-      - jaeger
+      - zipkin
     networks:
       - checkout-network
       - monit-network
-
-#  elasticsearch:
-#    image: elastic/elasticsearch:8.16.3
-#    container_name: elasticsearch
-#    environment:
-#      - discovery.type=single-node
-#      - bootstrap.memory_lock=true
-#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-#    ulimits:
-#      memlock:
-#        soft: -1
-#        hard: -1
-#    ports:
-#      - "9200:9200"
-#    networks:
-#      - checkout-network
-#
-#  filebeat:
-#    image: docker.elastic.co/beats/filebeat:8.8.0
-#    container_name: filebeat
-#    user: root
-#    volumes:
-#      - ./observability/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-#      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-#      - /var/run/docker.sock:/var/run/docker.sock:ro
-#    depends_on:
-#      - checkout-api
-#      - elasticsearch
-#      - splunk
-#    networks:
-#      - checkout-network
-#
-
-#
-#  prometheus:
-#    image: prom/prometheus:latest
-#    container_name: prometheus
-#    volumes:
-#      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-#    ports:
-#      - "9090:9090"
-#    networks:
-#      - checkout-network
-#
-#  grafana:
-#    image: grafana/grafana:latest
-#    container_name: grafana
-#    environment:
-#      - GF_SECURITY_ADMIN_USER=admin
-#      - GF_SECURITY_ADMIN_PASSWORD=admin
-#    volumes:
-#      - grafana-data:/var/lib/grafana
-#    ports:
-#      - "3000:3000"
-#    depends_on:
-#      - prometheus
-#    networks:
-#      - checkout-network
 
 networks:
   monit-network:
   checkout-network:
     driver: bridge
-
-volumes:
-  grafana-data:
