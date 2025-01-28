@@ -6,6 +6,7 @@ services:
     ports:
       - "9411:9411"
     networks:
+      - checkout-network
       - monit-network
   wiremock:
     image: andersonrodriguesdev/wiremock:latest
