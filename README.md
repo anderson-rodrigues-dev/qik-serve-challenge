@@ -118,7 +118,7 @@ The calculated checkout summary, including individual and total savings:
 
 ## **API URL**
 
-[Production URL](http://ec2-54-197-15-89.compute-1.amazonaws.com)
+[Production URL](http://ec2-54-197-15-89.compute-1.amazonaws.com) (HTTP)
 
 ### **Application Ports**
 
