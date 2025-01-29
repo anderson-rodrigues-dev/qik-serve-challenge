@@ -1,52 +1,139 @@
-# QikServe Engineer Technical Test
-Respostas às Perguntas de Acompanhamento
-1. Quanto tempo você gastou no teste? O que você adicionaria se tivesse mais tempo?
-Passei aproximadamente X horas no desenvolvimento do teste técnico.
-Se tivesse mais tempo, eu adicionaria:
+# **Checkout API**
 
-Melhorias em Multi-Tenancy: Automatizar e integrar a escolha de diferentes wiremocks para múltiplos POS.
-Testes de carga e segurança adicionais: Garantir que a API seja escalável e segura contra ataques como injeção de SQL ou XSS.
-Melhorias na internacionalização: Incorporar suporte a mais idiomas e testar traduções em diferentes cenários.
-2. Qual foi a funcionalidade mais útil adicionada na última versão da linguagem escolhida? Inclua um trecho de código que demonstre como você a utilizou.
-A funcionalidade mais útil foi o Record no Java (introduzido no Java 14 e estabilizado no Java 16). Ele simplifica a criação de classes imutáveis e melhora a legibilidade do código.
+## **Introduction**
 
-Exemplo de uso no projeto:
+This repository contains the **Checkout API**, a Java-based solution that processes shopping cart calculations and applies promotions dynamically. The API is integrated with a mock server (**WireMock**) that simulates the backend for product data and promotions.
 
-java
-Copiar
-Editar
-public record ExceptionResponse(Date timestamp, String message, String details) implements Serializable {
-    private static final long serialVersionUID = 1L;
+---
+
+## **WireMock**
+
+The **WireMock** server provides a mock backend with the following endpoints:
+
+1. **List All Products**  
+   **GET** `/products`  
+   Example Response:
+
+   ```json
+   [
+       {"id": "Dwt5F7KAhi", "name": "Amazing Pizza!", "price": 1099},
+       {"id": "PWWe3w1SDU", "name": "Amazing Burger!", "price": 999}
+   ]
+   ```
+
+2. **Product Information**  
+   **GET** `/products/{productId}`  
+   Example Response:
+
+   ```json
+   {
+       "id": "Dwt5F7KAhi",
+       "name": "Amazing Pizza!",
+       "price": 1099,
+       "promotions": [
+           {"id": "ibt3EEYczW", "type": "QTY_BASED_PRICE_OVERRIDE", "required_qty": 2, "price": 1799}
+       ]
+   }
+   ```
+
+---
+
+## **Checkout API**
+
+The **Checkout API** provides a single endpoint to calculate the checkout details based on the provided cart items.
+
+### **Endpoint**
+
+- **POST** `/api/checkout`
+
+### **Request Body**
+
+A list of products and their quantities:
+
+```json
+[
+    {"productId": "Dwt5F7KAhi", "quantity": 2},
+    {"productId": "PWWe3w1SDU", "quantity": 1}
+]
+```
+
+### **Response**
+
+The calculated checkout summary, including individual and total savings:
+
+```json
+{
+    "items": [
+        {
+            "productId": "Dwt5F7KAhi",
+            "name": "Amazing Pizza!",
+            "unitPrice": 1099,
+            "quantity": 2,
+            "grossPrice": 2198,
+            "discount": 399,
+            "calculatedPrice": 1799
+        },
+        {
+            "productId": "PWWe3w1SDU",
+            "name": "Amazing Burger!",
+            "unitPrice": 999,
+            "quantity": 1,
+            "grossPrice": 999,
+            "discount": 0,
+            "calculatedPrice": 999
+        }
+    ],
+    "subtotal": 3197,
+    "totalSavings": 399,
+    "totalPrice": 2798
 }
-Isso foi usado para padronizar a resposta de exceções na API, reduzindo o código boilerplate.
+```
 
-3. O que você achou mais difícil?
-Gerenciamento de Promoções Complexas: Implementar a lógica para múltiplos tipos de promoções e garantir que fossem aplicadas corretamente, mesmo com diferentes combinações de itens.
-Multi-Tenancy do WireMock: Configurar várias instâncias do WireMock para suportar múltiplos POS foi desafiador devido à necessidade de customização e automação.
-4. Qual mecanismo você implementou para rastrear problemas em produção? O que poderia fazer?
-Implementei:
+---
 
-Logging estruturado com SLF4J: Para capturar eventos relevantes da API e facilitar a identificação de problemas.
-Tratamento centralizado de exceções: A classe GlobalExceptionHandler padroniza as respostas de erro e fornece informações úteis para depuração.
-O que eu poderia fazer:
+## **Logic and Technical Highlights**
 
-Monitoramento com ferramentas como Prometheus e Grafana: Para capturar métricas de desempenho em tempo real.
-Tracing distribuído com OpenTelemetry: Para rastrear requisições entre serviços e identificar gargalos.
-5. Explique sua interpretação da lista de requisitos e o que foi entregue ou não entregue e por quê.
-Requisitos interpretados:
+### **Logic**
 
-MUST Have: A API foi desenvolvida para consumir o WireMock, aplicar promoções e calcular preços corretamente.
-SHOULD: Adicionei suporte à internacionalização para nomes de produtos, conforme especificado.
-COULD: Foi implementada a base para multi-tenancy, com múltiplos WireMocks representando POS diferentes.
-WON'T HAVE: Não desenvolvi uma interface gráfica, pois não era um foco do teste.
-Entregas:
+- **Promotion Handling:** The API dynamically applies multiple types of promotions (e.g., quantity-based discounts, percentage-based discounts).
+- **Calculation Workflow:**
+  1. Retrieves product details from WireMock.
+  2. Identifies and applies applicable promotions.
+  3. Calculates gross price, discounts, and final prices for each item.
 
-MUST: API funcional com lógica de checkout, promoções e cálculo de preços.
-SHOULD: Internacionalização concluída para en, pt e es.
-COULD: Suporte básico a multi-tenancy com WireMock.
-O que não foi entregue:
+### **Technical Highlights**
 
-Testes mais robustos para cenários de multi-tenancy devido à limitação de tempo.
-Diagrama do Processo de Checkout
-(Adicione um diagrama aqui para ilustrar o processo. Exemplo: um diagrama de sequência ou fluxo de dados.)
+- **Distributed Tracing:** OpenTelemetry and Zipkin were integrated to trace API requests and monitor performance.
+- **Internationalization (i18n):** Product names are translated into English, Portuguese, and Spanish based on request headers.
+- **Integration Testing:** WireMock was integrated with Testcontainers for realistic testing scenarios.
+- **Pipelines:** CI/CD pipelines were implemented using GitHub Actions for automated deployment to AWS.
 
+---
+
+## **Sequence Diagram**
+
+<img src="https://github.com/anderson-rodrigues-dev/qik-serve-challenge/blob/master/CheckoutSequenceDiagram.png" alt="Sequence Diagram">
+
+---
+
+## **API URL**
+
+[Production URL](http://ec2-54-197-15-89.compute-1.amazonaws.com)
+
+### **Application Ports**
+
+- **Checkout API:** Running on port `80`. If you access the root path (`/`), you will be redirected to the Swagger documentation.
+- **Zipkin:** Running on port `9411`.
+
+---
+
+## Follow-Up Questions and Answers
+[Answers Link](https://github.com/anderson-rodrigues-dev/qik-serve-challenge/blob/master/QikServe_TechTest_Questions.md)
+
+---
+
+## **Contact**
+
+- **Name:** Anderson Alves  
+- **Email:** [and.rt@hotmail.com](mailto:and.rt@hotmail.com)
+- **LinkedIn:** [linkedin.com/in/anderson-rod](https://linkedin.com/in/anderson-rod/)
