@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.Date;
+import java.util.List;
+import java.util.SequencedCollection;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -41,11 +43,14 @@ public class GlobalExceptionHandler {
         String message;
 
         try {
-            String[] classNameParts = ex.getClass().getName().split("\\$");
-            String statusName = classNameParts[classNameParts.length - 1];
+            SequencedCollection<String> classNameParts = List.of(ex.getClass().getName().split("\\$"));
+
+            String statusName = classNameParts.getLast();
+
             String normalizedStatusName = statusName.replaceAll("([A-Z])", "_$1").toUpperCase().substring(1);
 
             HttpStatus status = HttpStatus.valueOf(normalizedStatusName);
+
             message = ex.getMessage();
 
             ExceptionResponse response = new ExceptionResponse(

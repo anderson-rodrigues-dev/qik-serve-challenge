@@ -30,6 +30,7 @@ services:
     ports:
       - "8080:8080"
     environment:
+      OTEL.EXPORTER.ZIPKIN.ENDPOINT: http://zipkin:9411/api/v2/spans
       WIREMOCK.BASE-URL: http://wiremock:8081
     depends_on:
       - wiremock
